@@ -46,9 +46,6 @@ class Main
 				let isLosed = m.Control();
 			}
 
-		//	do Screen.setColor(false);
-		//    do Screen.drawRectangle(1, 1, 500, 240);
-		//    do Screen.setColor(true);
 			do Output.moveCursor(21, 15);
 			do Output.printString("Game over! Press Enter to continue");
 

@@ -22,7 +22,6 @@ class MapGenerator {
 
     method Array Generate() {
         var Array map;
-        var MapGenerator _this;
         var int i;
         var int j;
         var int index;
@@ -30,7 +29,6 @@ class MapGenerator {
         var int neighbour_index;
         var int g;
 
-        let _this = this;
         let map = Array.new(length);
         let g = 0;
         while (g < length){
