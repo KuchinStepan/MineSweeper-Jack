@@ -1,0 +1,66 @@
+class Main
+{
+	function void main() {
+		var boolean isLosed;
+		var boolean isRunning;
+		var Char shouldContinue;
+
+		var Map m;
+		var Block b;
+		var Array seed;
+		var Random random;
+		var int width;
+		var int height;
+		var int i;
+
+		let height = 8;
+		let width = 15;
+
+		let seed = Array.new(4);
+		do Output.moveCursor(10, 10);
+		do Output.printString("Please press any four keys: ");
+		let seed[0] = Keyboard.readChar();
+		let seed[1] = Keyboard.readChar();
+		let seed[2] = Keyboard.readChar();
+		let seed[3] = Keyboard.readChar();
+		
+		let i = 0;
+		while (i < 37) {
+			do Output.backSpace();
+			let i = i + 1;
+		}
+
+		do Block.Inizialize();
+
+		let random = Random.Create(seed);
+		// 1 - число строк, 2 - число столбцов
+
+		let isRunning = true;
+		while (isRunning) {
+			let m = Map.Create(height, width, random);
+			do m.FillMap();
+			do m.DrawMap();
+
+			let isLosed = false;
+			while (~isLosed) {
+				let isLosed = m.Control();
+			}
+
+		//	do Screen.setColor(false);
+		//    do Screen.drawRectangle(1, 1, 500, 240);
+		//    do Screen.setColor(true);
+			do Output.moveCursor(21, 15);
+			do Output.printString("Game over! Press Enter to continue");
+
+			let shouldContinue = Keyboard.readChar();
+			if (shouldContinue = 128) {
+				let isRunning = true;
+			}
+			else {
+				let isRunning = false;
+			}
+		}
+
+		return; 
+	}
+}

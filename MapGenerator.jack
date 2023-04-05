@@ -1,0 +1,70 @@
+class MapGenerator {
+    field Array mapArray;
+    field int width;
+    field int height;
+    field int length;
+    field Random random;
+
+    field int current_x;
+    field int current_y;
+
+    constructor MapGenerator Create(int widthIn, int heightIn, Random randomIn) {
+        let width = widthIn;
+        let height = heightIn;
+        let random = randomIn;
+        let current_x = 0;
+        let current_y = 0;
+        let length = Math.multiply(widthIn, heightIn);
+        let mapArray = Array.new(length);
+
+        return this;
+    }
+
+    method Array Generate() {
+        var Array map;
+        var MapGenerator _this;
+        var int i;
+        var int j;
+        var int index;
+        var int current;
+        var int neighbour_index;
+        var int g;
+
+        let _this = this;
+        let map = Array.new(length);
+        let g = 0;
+        while (g < length){
+            if (random.NextNumber() > 7) {
+                let map[g] = 9;
+            }
+            let g = g + 1;
+        }
+
+        while (current_x < width) {
+            while (current_y < height) {
+                let index = current_x + Math.multiply(current_y, width);
+                let current = map[index];
+
+                if (current > 8) {
+                    let i = -1;
+                    while (i < 2) {
+                        let j = -1;
+                        while (j < 2) {
+                            if ((current_x + j < width) & (current_y + i < height) & (current_x + j > -1) & (current_y + i > -1)) {
+                                let neighbour_index = current_x + j + Math.multiply(current_y + i, width);
+                                let map[neighbour_index] = map[neighbour_index] + 1;
+                            }
+                            let j = j + 1;
+                        }
+                        let i = i + 1;
+                    }
+                }
+                let current_y = current_y + 1;
+            }
+            let current_x = current_x + 1;
+            let current_y = 0;
+        }
+    
+        return map;
+    }
+}

@@ -1,0 +1,199 @@
+
+class Block {
+    field int X;
+    field int Y;
+    field int column;
+    field int line;
+    field int value;
+
+    field boolean isOpened;
+    field boolean isMine;
+    field boolean haveLabel;
+
+    static int verticalLineLength;
+    static int horizontalLineLength;
+
+    function void Inizialize() {
+        let verticalLineLength = 22;
+        let horizontalLineLength = 16;
+        return;
+    }
+
+    constructor Block Create(int x0, int y0, int number){
+        let column = x0;
+        let line = y0;
+        let value = number;
+
+        let X = Math.multiply(x0, horizontalLineLength) - 5;
+        let Y = Math.multiply(y0, verticalLineLength) - 6;
+        let isOpened = false;
+        let haveLabel = false;
+        if (number > 8) {
+            let isMine = true;
+        }
+
+        return this;
+    }
+
+    method void Open() {
+        var Block current;
+
+        let current = this;
+        if (haveLabel) {
+            let haveLabel = false;
+        }
+        let isOpened = true;
+        do current.DrawBased();
+
+        return;
+    }
+
+    method boolean CanOpen() {
+        return ~isOpened & (~isMine);
+    }
+
+    method boolean IsNull() {
+        return (value = 0);
+    }
+
+    method boolean IsBoom() {
+        return isMine;
+    }
+
+    method void ChangeLabel() {
+        if (~ isOpened) {
+            let haveLabel = ~haveLabel;
+        }
+
+        return;
+    }
+
+    method void DrawLabel() {
+        if (~ isOpened) {
+            do Output.moveCursor( line + line , column + column);
+            // 63 - code of '?'
+            do Output.printChar(63);
+        }
+
+        return;
+    }
+
+    method void DrawValue() {
+        if (value > 0) {
+        do Output.moveCursor( line + line , column + column);
+        do Output.printInt(value);
+        }
+        return;
+    }
+
+    method void DrawMine() {
+        var int r;
+        var int c_x, c_y;
+
+        let c_x = X + 8;
+        let c_y = Y + 11;
+        let r = 3;
+
+        do Screen.drawCircle(c_x, c_y, r);
+        return;
+    }
+
+    method void DrawSelected() {
+        var int in_x1;
+        var int in_y1;
+        var int in_x2;
+        var int in_y2;
+
+        var Block current;
+
+        var int dif_inner;
+        
+        let current = this;
+        do current.DrawBased();
+
+        let dif_inner = 2;
+
+        let in_x1 = X + dif_inner;
+        let in_y1 = Y + dif_inner;
+        
+        let in_x2 = in_x1;
+        let in_y2 = in_y1 + verticalLineLength - dif_inner - dif_inner;
+        do Screen.drawLine(in_x1, in_y1, in_x2, in_y2);
+
+        let in_y1 = in_y2;
+        let in_x2 = in_x1 + horizontalLineLength - dif_inner - dif_inner;
+        do Screen.drawLine(in_x1, in_y1, in_x2, in_y2);
+
+        let in_x1 = in_x2;
+        let in_y2 = in_y1 - verticalLineLength + dif_inner + dif_inner;
+        do Screen.drawLine(in_x1, in_y1, in_x2, in_y2);
+
+        let in_y1 = in_y2;
+        let in_x2 = in_x1 - horizontalLineLength + dif_inner + dif_inner;
+        do Screen.drawLine(in_x1, in_y1, in_x2, in_y2);
+
+        return;
+    }
+
+    method void DrawBased() {
+        var int x1;
+        var int y1;
+        var int x2;
+        var int y2;
+        var boolean ColorSetter;
+
+        var Block current;
+
+        let current = this;
+        do current.FillWhite();
+        
+        if (isOpened) {
+            if (isMine) {
+                do current.DrawMine();
+            }
+            else {
+                do current.DrawValue();
+            }
+        }
+        else {
+            if (haveLabel) {
+                do current.DrawLabel();
+            }
+            else {
+               // do Output.moveCursor( line + line , column + column);
+                // 35 - number of '#'
+                // 45 - '-'
+                // do Output.printChar(45);
+                do Screen.drawRectangle(X + 5, Y + 5, X + horizontalLineLength - 5, Y + verticalLineLength - 5);
+            }
+        }
+
+        let x1 = X;
+        let y1 = Y;
+        
+        let x2 = x1;
+        let y2 = y1 + verticalLineLength;
+        do Screen.drawLine(x1, y1, x2, y2);
+
+        let y1 = y2;
+        let x2 = x1 + horizontalLineLength;
+        do Screen.drawLine(x1, y1, x2, y2);
+
+        let x1 = x2;
+        let y2 = y1 - verticalLineLength;
+        do Screen.drawLine(x1, y1, x2, y2);
+
+        let y1 = y2;
+        let x2 = x1 - horizontalLineLength;
+        do Screen.drawLine(x1, y1, x2, y2);
+
+        return;
+    }
+
+    method void FillWhite(){
+        do Screen.setColor(false);
+        do Screen.drawRectangle(X, Y, X + horizontalLineLength, Y + verticalLineLength);
+        do Screen.setColor(true);
+        return;
+    }
+}

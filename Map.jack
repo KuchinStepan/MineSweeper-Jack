@@ -1,0 +1,224 @@
+class Map {
+    field Array mapArray;
+    field int width;
+    field int height;
+    field int length;
+
+    field int current_x;
+    field int current_y;
+
+    field int waitingTime;
+
+    field Random random;
+
+    constructor Map Create(int widthIn, int heightIn, Random randomIn) {
+        let width = widthIn;
+        let height = heightIn;
+        let current_x = 0;
+        let current_y = 0;
+        let length = Math.multiply(widthIn, heightIn);
+        let mapArray = Array.new(length);
+        let random = randomIn;
+
+        let waitingTime = 200;
+
+        return this;
+    }
+
+    method boolean Control() {
+        var int i, j;
+        var int index; 
+        var Block current;
+        var Block neighbour;
+        var boolean isLosed;
+
+        let isLosed = false;
+
+        // left
+        if (Keyboard.keyPressed() = 130) {
+            do DrawIfMoved(-1, 0);
+        }
+        // up
+        if (Keyboard.keyPressed() = 131) {
+            do DrawIfMoved(0, -1);
+        }
+        // right
+        if (Keyboard.keyPressed() = 132) {
+            do DrawIfMoved(1, 0);
+        }
+        // down
+        if (Keyboard.keyPressed() = 133) {
+            do DrawIfMoved(0, 1);
+        }
+        // enter
+        if (Keyboard.keyPressed() = 128) {
+            let isLosed = DrawIfChanged(true);
+        }
+        // space
+        if (Keyboard.keyPressed() = 32) {
+            do DrawIfChanged(false);
+        }
+
+        return isLosed;
+    }
+
+    method boolean DrawIfChanged(boolean isOpen) {
+        var Block currentBlock;
+        var Map currentMap;
+        var boolean isLosed;
+
+        let isLosed = false;
+        let currentMap = this;
+
+        let currentBlock = currentMap.GetBlock(current_x, current_y);
+        if (isOpen) {
+            do currentBlock.Open();
+            do currentBlock.DrawSelected();
+            if (currentBlock.IsBoom()) {
+                let isLosed = true;
+            }
+            if (currentBlock.IsNull()) {
+                do currentMap.TryOpenNeighbours(current_x, current_y);
+            }
+        }
+        else {
+            do currentBlock.ChangeLabel();
+            do currentBlock.DrawSelected();
+        }
+
+        do Sys.wait(waitingTime);
+
+        return isLosed;
+    }
+
+    method void TryOpenNeighbours(int x, int y) {
+        var int i, j;
+        var Block b;
+        var Map m;
+
+        let m = this;
+
+        let i = -1;
+        let j = -1;
+        while (i < 2) {
+            while (j < 2) {
+                if ((x + j < width) & (y + i < height) & (x + j > -1) & (y + i > -1)) {
+                    let b = m.GetBlock(x + j, y + i);
+                    if (b.CanOpen()) {
+                        do b.Open();
+                        if (b.IsNull()) {
+                            do m.TryOpenNeighbours(x + j, y + i);
+                        }
+                    }
+                }
+
+                let j = j + 1;
+            }
+            let i = i + 1;
+            let j = -1;
+        }
+
+        return;
+    }
+
+    method void DrawIfMoved(int i, int j) {
+        var int index; 
+        var Block currentBlock;
+        var Map currentMap;
+
+        let currentMap = this;
+
+        // проверка условий границ
+        if ((current_x + j < width) & (current_y + i < height) & (current_x + j > -1) & (current_y + i > -1)) {
+            let currentBlock = currentMap.GetBlock(current_x, current_y);
+            do currentBlock.DrawBased();
+
+            let current_x = current_x + j;
+            let current_y = current_y + i;
+
+            let currentBlock = currentMap.GetBlock(current_x, current_y);
+            do currentBlock.DrawSelected();
+        }
+        do Sys.wait(waitingTime);
+        
+        return;
+    }
+
+    method void FillMap() {
+        var int i, j;
+        var int index;
+        var Block b;
+        var Array line;
+
+        var Array r_seed;
+
+        var Array g_Line;
+        var MapGenerator generator;
+        var int g_value;
+
+        let generator = MapGenerator.Create(width, length, random);
+        let g_Line = generator.Generate();
+
+        let i = 0;
+        let j = 0;
+        while (i < height) {
+            while (j < width) {
+                let index = j + Math.multiply(i, width);
+                let g_value = g_Line[index];
+
+                // нужно задать смещение блоков
+                let b = Block.Create(i + 8, j + 2, g_value);
+
+                let mapArray[index] = b;
+
+                let j = j + 1;
+            }
+            let i = i + 1;
+            let j = 0;
+        }
+
+        return;
+    }
+
+    method Block GetBlock(int x, int y) {
+        var int index;
+        var Block current;
+
+        let index = x + Math.multiply(y, width);
+        let current = mapArray[index];
+
+        return current;
+    } 
+
+    method void DrawMap() {
+        var int i, j;
+        var int index;
+        var Block b;
+        var Array line;
+        var Map currentMap;
+
+        let currentMap = this;
+
+        let b = mapArray[0];
+        do b.DrawSelected();
+
+        let i = 0;
+        let j = 1;
+        while (i < height) {
+            while (j < width) {
+                let index = j + Math.multiply(i, width);
+                let b = mapArray[index];
+                do b.DrawBased();
+
+                let j = j + 1;
+            }
+            let i = i + 1;
+            let j = 0;
+        }
+
+        return;
+    }
+
+
+
+}

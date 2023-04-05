@@ -1,0 +1,33 @@
+class Random { 
+    field Array seed;
+    field int current_number;
+    field int a;
+    field int m;
+
+    constructor Random Create(Array seedIn) {
+        var int i;
+        var Random _this;
+        let seed = Array.new(4);
+        let a = 219;
+        let m = 32749;
+
+        let i = 0;
+        while (i < 4) {
+            let seed[i] = seedIn[i] + (i * 3);
+            let i = i + 1;
+        }
+        let current_number = seed[0] * 11 + seed[1] * 127 + seed[2] * 239 + seed[3] * 1381;
+        let _this = this;
+        do _this.NextNumber();
+
+        return this;
+    }
+
+    method int NextNumber() {
+        var int result;
+        let current_number = a * current_number;
+        let current_number = current_number - ((current_number / m) * m);
+        let result = current_number - ((current_number / 10) * 10);
+        return result;
+    }
+}
